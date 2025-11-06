@@ -144,7 +144,19 @@ class OrderController extends Controller
             session()->forget('cart');
             session()->forget('coupon');
         }
-        Cart::where('user_id', auth()->user()->id)->where('order_id', null)->update(['order_id' => $order->id]);
+        // Update cart items with order_id and save product snapshot
+        $cartItems = Cart::where('user_id', auth()->user()->id)->where('order_id', null)->get();
+        foreach ($cartItems as $cart) {
+            $product = $cart->product;
+            if ($product) {
+                $cart->product_title = $product->title;
+                $cart->product_photo = $product->photo;
+                $cart->product_summary = $product->summary;
+                $cart->product_size = $product->size;
+            }
+            $cart->order_id = $order->id;
+            $cart->save();
+        }
 
         // dd($users);        
         request()->session()->flash('success','Your product successfully placed in order');

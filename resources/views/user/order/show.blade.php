@@ -134,6 +134,81 @@
         </div>
       </div>
     </section>
+
+    {{-- Product List Section --}}
+    <section class="product_list section_padding">
+      <div class="order_boxes">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="product-info">
+              <h4 class="text-center pb-4">PRODUCT LIST</h4>
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>S.N.</th>
+                    <th>Product Image</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @if($order->cart && $order->cart->count() > 0)
+                    @foreach($order->cart as $index => $cart)
+                      <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <td>
+                          @php
+                            $photo = $cart->getProductPhoto();
+                          @endphp
+                          @if($photo)
+                            <img src="{{ $photo }}" class="img-fluid" style="max-width: 80px;" alt="{{ $cart->getProductTitle() }}">
+                          @else
+                            <img src="{{ asset('backend/img/thumbnail-default.jpg') }}" class="img-fluid" style="max-width: 80px;" alt="No Image">
+                          @endif
+                        </td>
+                        <td>
+                          <strong>{{ $cart->getProductTitle() }}</strong><br>
+                          @if($cart->getProductSize())
+                            <small>Size: {{ $cart->getProductSize() }}</small>
+                          @endif
+                        </td>
+                        <td>{{ $cart->quantity }}</td>
+                        <td>${{ number_format($cart->price, 2) }}</td>
+                        <td>${{ number_format($cart->amount, 2) }}</td>
+                      </tr>
+                    @endforeach
+                    <tr>
+                      <td colspan="5" class="text-right"><strong>Subtotal:</strong></td>
+                      <td><strong>${{ number_format($order->sub_total, 2) }}</strong></td>
+                    </tr>
+                    <tr>
+                      <td colspan="5" class="text-right"><strong>Shipping:</strong></td>
+                      <td><strong>${{ number_format($order->shipping->price, 2) }}</strong></td>
+                    </tr>
+                    @if($order->coupon)
+                    <tr>
+                      <td colspan="5" class="text-right"><strong>Coupon Discount:</strong></td>
+                      <td><strong>-${{ number_format($order->coupon, 2) }}</strong></td>
+                    </tr>
+                    @endif
+                    <tr>
+                      <td colspan="5" class="text-right"><strong>Grand Total:</strong></td>
+                      <td><strong>${{ number_format($order->total_amount, 2) }}</strong></td>
+                    </tr>
+                  @else
+                    <tr>
+                      <td colspan="6" class="text-center">No products found in this order.</td>
+                    </tr>
+                  @endif
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
     @endif
 
   </div>
